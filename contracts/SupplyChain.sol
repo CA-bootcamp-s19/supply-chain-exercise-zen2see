@@ -1,6 +1,6 @@
 /*
     This exercise has been updated to use Solidity version 0.5
-    Breaking changes from 0.4 to 0.5 can be found here: 
+    Breaking changes from 0.4 to 0.5 can be found here:
     https://solidity.readthedocs.io/en/v0.5.0/050-breaking-changes.html
 */
 
@@ -12,11 +12,12 @@ contract SupplyChain {
   address owner;
 
   /* Add a variable called skuCount to track the most recent sku # */
+  uint skuCount;
 
   /* Add a line that creates a public mapping that maps the SKU (a number) to an Item.
      Call this mappings items
   */
-
+  mapping (address ==> uint) public items;
   /* Add a line that creates an enum called State. This should have 4 states
     ForSale
     Sold
@@ -24,6 +25,9 @@ contract SupplyChain {
     Received
     (declaring them in this order is important for testing)
   */
+  enum State {
+    ForSale, Sold, Shipped, Received
+  }
 
   /* Create a struct named Item.
     Here, add a name, sku, price, state, seller, and buyer
@@ -31,6 +35,15 @@ contract SupplyChain {
     if you need help you can ask around :)
     Be sure to add "payable" to addresses that will be handling value transfer
   */
+  struct Item {
+    string name;
+    uint sku; 
+    uint price;
+    bool states;
+    address payable seller;
+    address payable buyer;
+
+  }
 
   /* Create 4 events with the same name as each possible State (see above)
     Prefix each event with "Log" for clarity, so the forSale event will be called "LogForSale"
@@ -51,7 +64,7 @@ contract SupplyChain {
 
   /* For each of the following modifiers, use what you learned about modifiers
    to give them functionality. For example, the forSale modifier should require
-   that the item with the given sku has the state ForSale. 
+   that the item with the given sku has the state ForSale.
    Note that the uninitialized Item.State is 0, which is also the index of the ForSale value,
    so checking that Item.State == ForSale is not sufficient to check that an Item is for sale.
    Hint: What item properties will be non-zero when an Item has been added?
