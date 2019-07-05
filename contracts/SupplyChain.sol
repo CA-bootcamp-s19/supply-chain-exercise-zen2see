@@ -17,7 +17,7 @@ contract SupplyChain {
   /* Add a line that creates a public mapping that maps the SKU (a number) to an Item.
      Call this mappings items
   */
-  mapping (uint ==> Item) public items;
+  mapping (uint => Item) public items;
 
   /* Add a line that creates an enum called State. This should have 4 states
     ForSale
@@ -87,10 +87,37 @@ contract SupplyChain {
    so checking that Item.State == ForSale is not sufficient to check that an Item is for sale.
    Hint: What item properties will be non-zero when an Item has been added?
    */
-  modifier forSale(uint _sku) { require (uint(items[_sku].State) == State.ForSale); _;}
-  modifier sold(uint _sku) { require (uint(items[_sku].State) == State.Sold); _;}
-  modifier shipped(uint _sku) { require (uint(items[_sku].State) == State.Shipped); _;}
-  modifier received(uint _sku) { require (uint(itmes[_sku].State) == State.Received); _;}
+  modifier forSale(uint _sku) {
+    require(
+      uint(items[_sku].state) == State.ForSale,
+      "Verify the item is for Sale."
+    );
+    _;
+  }
+
+  modifier sold(uint _sku) {
+     require(
+       uint(items[_sku].state) == State.Sold,
+       "Verify the item is Sold."
+     );
+     _;
+  }
+
+  modifier shipped(uint _sku) {
+     require(
+       uint(items[_sku].state) == State.Shipped,
+       "Verify the item Shipped."
+     );
+     _;
+  }
+
+  modifier received(uint _sku) {
+     require(
+       uint(itmes[_sku].state) == State.Received,
+       "Verify the item Received."
+     );
+     _;
+  }
 
   constructor() public {
     /* Here, set the owner as the person who instantiated the contract
@@ -111,10 +138,16 @@ contract SupplyChain {
     to Sold. Be careful, this function should use 3 modifiers to check if the item is for sale,
     if the buyer paid enough, and check the value after the function is called to make sure the buyer is
     refunded any excess ether sent. Remember to call the event associated with this function!*/
-  function buyItem(uint sku) public payable forSale(sku), paidEnough(sku), checkValue(sku) {
-    
-
-      )
+  function buyItem(uint sku) 
+    public
+    payable
+    forSale(sku)
+    paidEnough(sku)
+    checkValue(sku)
+  {
+    items[sku].buyer = msg.sender;
+    uint(items[sku].state) = State.Sold;
+    emit LogSold(sku);
   }
 
   /* Add 2 modifiers to check if the item is sold already, and that the person calling this function
