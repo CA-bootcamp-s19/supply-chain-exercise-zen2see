@@ -138,7 +138,7 @@ contract SupplyChain {
     to Sold. Be careful, this function should use 3 modifiers to check if the item is for sale,
     if the buyer paid enough, and check the value after the function is called to make sure the buyer is
     refunded any excess ether sent. Remember to call the event associated with this function!*/
-  function buyItem(uint sku) 
+  function buyItem(uint sku)
     public
     payable
     forSale(sku)
@@ -154,13 +154,23 @@ contract SupplyChain {
   is the seller. Change the state of the item to shipped. Remember to call the event associated with this function!*/
   function shipItem(uint sku)
     public
-  {}
+    sold(sku)
+    verifyCaller(address)
+  {
+    uint(items[sku].state) = State.Shipped;
+    emit LogShipped(sku);
+  }
 
   /* Add 2 modifiers to check if the item is shipped already, and that the person calling this function
   is the buyer. Change the state of the item to received. Remember to call the event associated with this function!*/
   function receiveItem(uint sku)
     public
-  {}
+    shipped(sku)
+    verifyCaller(address)
+  {
+    uint(items[sku].state) = State.Received;
+    emit LogReceived(sku);
+  }
 
   /* We have these functions completed so we can run tests, just ignore it :) */
   function fetchItem(uint _sku) public view returns (string memory name, uint sku, uint price, uint state, address seller, address buyer) {
