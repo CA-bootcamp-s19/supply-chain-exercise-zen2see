@@ -183,7 +183,7 @@ contract SupplyChain {
     shipped(sku)
     isBuyer(sku)
   {
-    uint(items[sku].state) = State.Received;
+    items[sku].state = State.Received;
     emit LogReceived(sku);
   }
 
