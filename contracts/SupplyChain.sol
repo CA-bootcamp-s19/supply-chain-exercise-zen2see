@@ -113,7 +113,7 @@ contract SupplyChain {
 
   modifier received(uint _sku) {
      require(
-       uint(itmes[_sku].state) == State.Received,
+       uint(items[_sku].state) == State.Received,
        "Verify the item Received."
      );
      _;
