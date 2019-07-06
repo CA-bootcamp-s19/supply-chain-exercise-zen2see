@@ -70,7 +70,6 @@ contract SupplyChain {
       _;
   }
   modifier verifyCaller (address _address) { require (msg.sender == _address); _;}
-
   modifier paidEnough(uint _price) { require(msg.value >= _price); _;}
   modifier checkValue(uint _sku) {
     //refund them after pay for item (why it is before, _ checks for logic before func)
@@ -89,7 +88,7 @@ contract SupplyChain {
    */
   modifier forSale(uint _sku) {
     require(
-      uint(items[_sku].state) == State.ForSale,
+      items[_sku].state == State.ForSale,
       "Verify the item is for Sale."
     );
     _;
@@ -97,7 +96,7 @@ contract SupplyChain {
 
   modifier sold(uint _sku) {
      require(
-       uint(items[_sku].state) == State.Sold,
+       items[_sku].state == State.Sold,
        "Verify the item is Sold."
      );
      _;
@@ -105,7 +104,7 @@ contract SupplyChain {
 
   modifier shipped(uint _sku) {
      require(
-       uint(items[_sku].state) == State.Shipped,
+       items[_sku].state == State.Shipped,
        "Verify the item Shipped."
      );
      _;
@@ -113,10 +112,26 @@ contract SupplyChain {
 
   modifier received(uint _sku) {
      require(
-       uint(items[_sku].state) == State.Received,
+       items[_sku].state == State.Received,
        "Verify the item Received."
      );
      _;
+  }
+
+  modifier isSeller(uint _sku) {
+    require(
+      items[_sku].seller == msg.sender,
+      "Verify the caller is the seller."
+    );
+    _;
+  }
+
+  modifier isBuyer(uint _sku) {
+    require(
+      items[_sku].buyer == msg.sender,
+      "Verify the caller is the buyer."
+    );
+    _;
   }
 
   constructor() public {
@@ -146,7 +161,7 @@ contract SupplyChain {
     checkValue(sku)
   {
     items[sku].buyer = msg.sender;
-    uint(items[sku].state) = State.Sold;
+    items[sku].state = State.Sold;
     emit LogSold(sku);
   }
 
@@ -155,9 +170,9 @@ contract SupplyChain {
   function shipItem(uint sku)
     public
     sold(sku)
-    verifyCaller(address)
+    isSeller(sku)
   {
-    uint(items[sku].state) = State.Shipped;
+    items[sku].state = State.Shipped;
     emit LogShipped(sku);
   }
 
@@ -166,7 +181,7 @@ contract SupplyChain {
   function receiveItem(uint sku)
     public
     shipped(sku)
-    verifyCaller(address)
+    isBuyer(sku)
   {
     uint(items[sku].state) = State.Received;
     emit LogReceived(sku);
